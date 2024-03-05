@@ -1,24 +1,22 @@
 import * as express from "express";
 import {onRequest, Request} from "firebase-functions/v2/https";
 
-const { defineInt, defineString } = require('firebase-functions/params');
+import {defineString} from "firebase-functions/params";
 
-const TELEGRAM_API_TOKEN = defineString('TELEGRAM_API_TOKEN');
+const TELEGRAM_API_TOKEN = defineString("TELEGRAM_API_TOKEN");
 
-const {initializeApp} = require("firebase-admin/app");
-const {getFirestore} = require("firebase-admin/firestore");
+import {initializeApp} from "firebase-admin/app";
+import {getFirestore} from "firebase-admin/firestore";
 
 initializeApp();
 
 exports.saveMessageToDB = onRequest(
-    { TELEGRAM_API_TOKEN: TELEGRAM_API_TOKEN },
-    async (req:Request, res:express.Response) => {
-    
-        const writeResult = await getFirestore()
-            .collection("messages")
-            .add({query: req.query });
-    
-        res.json({result: `Message with ID: ${writeResult.id} added.`});
-    
-      }   
-)
+  {TELEGRAM_API_TOKEN: TELEGRAM_API_TOKEN},
+  async (req:Request, res:express.Response) => {
+    const writeResult = await getFirestore()
+      .collection("messages")
+      .add({query: req.query});
+
+    res.json({result: `Message with ID: ${writeResult.id} added.`});
+  }
+);
