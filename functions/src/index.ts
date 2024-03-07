@@ -15,22 +15,31 @@ const bot = new Telegraf(TELEGRAM_API_TOKEN.value());
 bot.start((ctx) => ctx.reply("Yeah daar gaan we"));
 bot.help((ctx) => ctx.reply("Ik weet het ook niet, kom ik op terug"));
 
+bot.command("plan", async (ctx) => {
+  ctx.reply("Planning the next moments");
+});
+
 // We could trigger some other way in the future - in a seperate function!
 // But for now, trigger by sending /cron
 bot.command("cron", async (ctx) => {
-  ctx.reply("That's a cron job!");
-  const questions = await getFirestore()
-    .collection("questions")
+  const repos = getFirestore()
+    .collection("questions");
+
+  const questions = await repos
     .where("status", "==", "planned")
     .where("timing", "<", Timestamp.fromDate(new Date()))
     .get();
+
   if (questions.empty) {
-    ctx.reply("Nothing planned!");
+    ctx.reply("No planned questions.");
     return;
   }
-  ctx.reply(`We have ${questions.size} planned!`);
+
+  ctx.reply(`We have ${questions.size} question(s) planned!`);
   questions.forEach( (doc) => {
-    ctx.reply(doc.data().question);
+    const savedData = doc.data();
+    ctx.telegram.sendMessage(savedData.chat, savedData.question);
+    repos.doc(savedData.id).set({"status": "asked"});
   });
 });
 
