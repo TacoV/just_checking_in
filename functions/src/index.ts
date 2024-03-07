@@ -98,10 +98,8 @@ async function askedPlannedQuestions() {
 }
 
 // That's a wrap - let's export it to Google!
-exports.cron = onSchedule("every 1 minutes", async (event: any) => {
-  if ( event.xys !== undefined ) {
-    askedPlannedQuestions();
-  }
+exports.cron = onSchedule("every 5 minutes", async (event: any) => {
+  askedPlannedQuestions();
   if ( event.xys !== undefined ) {
     planNextQuestions();
   }
