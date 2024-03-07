@@ -1,3 +1,4 @@
+import {onSchedule} from "firebase-functions/v2/scheduler";
 import {onRequest} from "firebase-functions/v2/https";
 import {defineString} from "firebase-functions/params";
 import {initializeApp} from "firebase-admin/app";
@@ -14,34 +15,6 @@ const bot = new Telegraf(TELEGRAM_API_TOKEN.value());
 // Process basic commands /start and /help
 bot.start((ctx) => ctx.reply("Yeah daar gaan we"));
 bot.help((ctx) => ctx.reply("Ik weet het ook niet, kom ik op terug"));
-
-bot.command("plan", async (ctx) => {
-  ctx.reply("Planning the next moments");
-});
-
-// We could trigger some other way in the future - in a seperate function!
-// But for now, trigger by sending /cron
-bot.command("cron", async (ctx) => {
-  const repos = getFirestore()
-    .collection("questions");
-
-  const questions = await repos
-    .where("status", "==", "planned")
-    .where("timing", "<", Timestamp.fromDate(new Date()))
-    .get();
-
-  if (questions.empty) {
-    ctx.reply("No planned questions.");
-    return;
-  }
-
-  ctx.reply(`We have ${questions.size} question(s) planned!`);
-  questions.forEach( (doc) => {
-    const savedData = doc.data();
-    ctx.telegram.sendMessage(savedData.chat, savedData.question);
-    repos.doc(savedData.id).set({"status": "asked"});
-  });
-});
 
 // Schedule some questiosn!
 bot.command("remind", async (ctx) => {
@@ -88,3 +61,50 @@ bot.on("message", async (ctx) => {
 
 // That's a wrap - let's export it to Google!
 exports.telegram = onRequest(bot.webhookCallback());
+
+
+/**
+ * Process basic commands /start and /help
+ */
+async function planNextQuestions() {
+  logger.log("Scheduling the next questions to be asked");
+}
+
+/**
+ * We could trigger some other way in the future - in a seperate function!
+ * But for now, trigger by sending /cron
+ */
+async function askedPlannedQuestions() {
+  logger.log("Asking any unasked questions - if it is time");
+
+  const repos = getFirestore()
+    .collection("questions");
+
+  const questions = await repos
+    .where("status", "==", "planned")
+    .where("timing", "<", Timestamp.fromDate(new Date()))
+    .get();
+
+  if (questions.empty) {
+    return;
+  }
+
+  questions.forEach( (doc) => {
+    const savedData = doc.data();
+    bot.telegram.sendMessage(savedData.chat, savedData.question);
+    repos.doc(savedData.id).set({"status": "asked"});
+    // }, { merge: true });
+  });
+}
+
+// That's a wrap - let's export it to Google!
+exports.cron = onSchedule("every 1 minutes", async (event: any) => {
+  if ( event.xys !== undefined ) {
+    askedPlannedQuestions();
+  }
+  if ( event.xys !== undefined ) {
+    planNextQuestions();
+  }
+  logger.log(event);
+}
+);
