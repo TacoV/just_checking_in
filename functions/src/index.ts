@@ -15,12 +15,23 @@ bot.start((ctx) => ctx.reply("Welcome"));
 bot.command("test", async (ctx) => ctx.reply("Tested"));
 bot.help((ctx) => ctx.reply("No help to be found here"));
 
-bot.command("hello", async (ctx) => {
-  logger.log(ctx.message.from);
+bot.on("message", async (ctx) => {
+  logger.log("Received message", ctx.message);
   const writeResult = await getFirestore()
     .collection("messages")
-    .add({query: "Test"});
+    .add({
+      message: ctx.message,
+      update: ctx.update,
+      state: ctx.state
+    });
   ctx.reply(`Message with ID: ${writeResult.id} added.`);
 });
+
+bot.on('callback_query', ctx => ctx.answerCbQuery())
+
+bot.on('inline_query', async (ctx) => {
+  const result = []
+  await ctx.answerInlineQuery(result)
+})
 
 exports.telegram = onRequest(bot.webhookCallback());
