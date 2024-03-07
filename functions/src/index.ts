@@ -37,11 +37,12 @@ bot.command("cron", async (ctx) => {
 // Schedule some questiosn!
 bot.command("remind", async (ctx) => {
   ctx.reply("Need a reminder?");
+  const inTwoMinutes = new Date((new Date()).getTime() + 2*60*1e3);
   await getFirestore()
     .collection("questions")
     .add({
       status: "planned", // asked, answered, dropped
-      timing: Timestamp.fromDate(new Date("+5 minutes")),
+      timing: Timestamp.fromDate(inTwoMinutes),
       question: "Does this work?",
       answers: ["Yes", "No"],
       chat: ctx.chat.id,
