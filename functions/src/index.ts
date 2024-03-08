@@ -44,6 +44,18 @@ bot.command("remind", async (ctx) => {
   ctx.reply("Create a schedule for you!");
 });
 
+// Clear all schedules for this chat
+bot.command("clear", async (ctx) => {
+  const repos = getFirestore()
+    .collection("schedules")
+  const mySchedules = await repos
+    .where("chat", "==", ctx.chat.id)
+    .get();
+    mySchedules.forEach( doc => {
+      repos.doc(doc.id).delete()
+    })
+})
+
 // Todo: 4. Process answers (telegram webhook)
 // Todo: list active schedules
 // Todo: delete schedules
