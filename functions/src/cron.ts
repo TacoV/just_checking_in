@@ -4,14 +4,14 @@ import {Telegraf} from "telegraf";
 
 // 2. Plan questions (cron)
 async function planNextQuestions( ) {
-  const repos = getFirestore()
+  const schedulesCollection = getFirestore()
     .collection("schedules");
 
   // Evaluate every schedule that's almost running unplanned
   const scheduleHorizon = Timestamp.fromDate(
     new Date((new Date()).getTime() + 2*60*1e3)
   );
-  const schedules = await repos
+  const schedules = await schedulesCollection
     .where("scheduled", "<", scheduleHorizon)
     .get();
 
@@ -20,23 +20,28 @@ async function planNextQuestions( ) {
     return;
   }
 
+  const questionsCollection = getFirestore()
+    .collection("questions");
+
+  // We now have schedules with an array of schedules,
+  // resulting in possibly multiple timestamps and a single
+  // new horizon. @todo update the terminology to be less
+  // confusing
   schedules.forEach( (doc) => {
     const data = doc.data();
     data.schedule.forEach( (d:any) => {
       const {newHorizon, timestamps} = planAhead(d);
       timestamps.forEach((planTimestamp) => {
-        getFirestore()
-          .collection("questions")
-          .add({
-            status: "planned", // asked, answered, dropped
-            timing: planTimestamp,
-            question: data.question,
-            answers: data.answers,
-            chat: data.chat,
-          });
+        questionsCollection .add({
+          status: "planned", // asked, answered, dropped
+          timing: planTimestamp,
+          question: data.question,
+          answers: data.answers,
+          chat: data.chat,
+        });
       });
 
-      repos
+      schedulesCollection
         .doc(doc.id)
         .set({
           scheduled: newHorizon,
@@ -51,6 +56,18 @@ function planAhead(d:any) {
       new Date((new Date()).getTime() + 2*60*1e3)
     );
     return {newHorizon: scheduleHorizon, timestamps: [scheduleHorizon]};
+  }
+  if ("daily timed" == d.type ) {
+    const [h, m, s] = d.time.split(':');
+    const nextTime = new Date;
+    nextTime.setHours(h, m, s);
+    if ( nextTime < new Date ) {
+      nextTime.setDate(nextTime.getDate() + 1);
+    }
+    const scheduleHorizon = new Date(nextTime);
+    scheduleHorizon.setHours(scheduleHorizon.getHours() + 12 );
+
+    return {newHorizon: scheduleHorizon, timestamps: [nextTime]};
   }
   return {newHorizon: null, timestamps: []};
 }
