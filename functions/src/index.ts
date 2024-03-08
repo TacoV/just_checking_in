@@ -12,25 +12,43 @@ initializeApp();
 
 const bot = new Telegraf(TELEGRAM_API_TOKEN.value());
 
+/**
+ * FUNCTION 1 - Telegram responses
+ */
+
 // Process basic commands /start and /help
 bot.start((ctx) => ctx.reply("Yeah daar gaan we"));
 bot.help((ctx) => ctx.reply("Ik weet het ook niet, kom ik op terug"));
 
-// Schedule some questiosn!
+// 1. Create a schedule (telegram webhook)
+// 2. Plan questions (cron)
+// 3. Ask questions (cron)
+// 4. Process answers (telegram webhook)
+
+// 1. Create a schedule (telegram webhook)
 bot.command("remind", async (ctx) => {
-  ctx.reply("Need a reminder?");
-  const inTwoMinutes = new Date((new Date()).getTime() + 2*60*1e3);
+  ctx.reply("Setting up three daily reminders. "+
+          "No customization possible yet!");
   await getFirestore()
-    .collection("questions")
+    .collection("schedules")
     .add({
-      status: "planned", // asked, answered, dropped
-      timing: Timestamp.fromDate(inTwoMinutes),
       question: "Does this work?",
       answers: ["Yes", "No"],
       chat: ctx.chat.id,
+      schedule: [
+        {"type": "often", "every": "5 min"},
+        {"type": "daily timed", "time": "07:00:00"},
+      ],
+      scheduled: Timestamp.fromDate(new Date()),
     });
-  ctx.reply("Planned!");
+  ctx.reply("Create a schedule for you!");
 });
+
+// Todo: 4. Process answers (telegram webhook)
+// Todo: list active schedules
+// Todo: delete schedules
+// Todo: edit schedules
+// Todo: see results of questions
 
 // Fallback processing of messages
 bot.on("message", async (ctx) => {
@@ -41,14 +59,14 @@ bot.on("message", async (ctx) => {
   }
 
   // Log the info
-  logger.log("Received uncaught message", {
+  logger.log("Received unknown command", {
     botname: ctx.botInfo.username,
     sender: ctx.message.from.first_name,
     text: ctx.text,
     chat: ctx.chat.type == "private" ? "private" : ctx.chat.title,
   });
 
-  // Save infno to Firestore too - for now
+  // Save info to Firestore too - for now
   const writeResult = await getFirestore()
     .collection("messages")
     .add({
@@ -62,20 +80,52 @@ bot.on("message", async (ctx) => {
 // That's a wrap - let's export it to Google!
 exports.telegram = onRequest(bot.webhookCallback());
 
-
 /**
- * Process basic commands /start and /help
+ * FUNCTION 2 - Telegram messags
  */
+
+// 2. Plan questions (cron)
 async function planNextQuestions() {
   logger.log("Scheduling the next questions to be asked");
+
+  const repos = getFirestore()
+    .collection("schedules");
+
+  const schedules = await repos
+    .where("scheduled", "<", Timestamp.fromDate(new Date()))
+    .get();
+
+  if (schedules.empty) {
+    logger.log("We're up to date, nothing new to schedule right now");
+    return;
+  }
+
+  logger.log(`Planning questions for ${schedules.size} schedules`);
+  const inFiveMinutes = new Date((new Date()).getTime() + 5*60*1e3);
+  schedules.forEach( (doc) => {
+    const data = doc.data();
+    getFirestore()
+      .collection("questions")
+      .add({
+        status: "planned", // asked, answered, dropped
+        timing: Timestamp.fromDate(inFiveMinutes),
+        question: data.question,
+        answers: data.answers,
+        chat: data.chat,
+      });
+    repos
+      .doc(doc.id)
+      .set({
+        scheduled: Timestamp.fromDate(inFiveMinutes),
+      }, {merge: true});
+  });
+
+  logger.log("Done - ready to ask them later.");
 }
 
-/**
- * We could trigger some other way in the future - in a seperate function!
- * But for now, trigger by sending /cron
- */
+// 3. Ask questions (cron)
 async function askedPlannedQuestions() {
-  logger.log("Asking any unasked questions - if it is time");
+  logger.log("Checking for unasked questions.");
 
   const repos = getFirestore()
     .collection("questions");
@@ -86,23 +136,25 @@ async function askedPlannedQuestions() {
     .get();
 
   if (questions.empty) {
+    logger.log("No due unasked questions found.");
     return;
   }
 
   questions.forEach( (doc) => {
+    logger.log("Asking a questions!");
     const savedData = doc.data();
     bot.telegram.sendMessage(savedData.chat, savedData.question);
-    repos.doc(savedData.id).set({"status": "asked"});
-    // }, { merge: true });
+    repos.doc(doc.id).set({
+      "status": "asked",
+    }, {merge: true});
   });
+
+  logger.log("Done asking questions for now.");
 }
 
 // That's a wrap - let's export it to Google!
-exports.cron = onSchedule("every 5 minutes", async (event: any) => {
+exports.cron = onSchedule("every 1 minutes", async () => {
+  planNextQuestions();
   askedPlannedQuestions();
-  if ( event.xys !== undefined ) {
-    planNextQuestions();
-  }
-  logger.log(event);
 }
 );
