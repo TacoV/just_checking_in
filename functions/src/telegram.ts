@@ -3,9 +3,7 @@ import {Telegraf, Context} from "telegraf";
 import {logger} from "firebase-functions/v2";
 
 // eslint-disable-next-line require-jsdoc
-async function createSchedule(ctx: Context) {
-  ctx.reply("Setting up three daily reminders. " +
-            "No customization possible yet!");
+async function debugSchedule(ctx: Context) {
   await getFirestore()
     .collection("schedules")
     .add({
@@ -13,12 +11,48 @@ async function createSchedule(ctx: Context) {
       answers: ["Yes", "No"],
       chat: ctx.chat?.id,
       schedule: [
-        {"type": "often", "every": "5 min"},
-        {"type": "daily timed", "time": "07:00:00"},
+        {"type": "often"},
       ],
       scheduled: Timestamp.fromDate(new Date()),
     });
-  ctx.reply("Create a schedule for you!");
+}
+
+// eslint-disable-next-line require-jsdoc
+async function createSchedule(ctx: Context) {
+  ctx.reply("Reminders gezet om 8:00, 13:00 en 21:00!");
+  await getFirestore()
+    .collection("schedules")
+    .add({
+      question: "Heb je je ochtend-pillen geslikt?",
+      answers: ["Ja", "Nee"],
+      chat: ctx.chat?.id,
+      schedule: [
+        {"type": "daily timed", "time": "08:00:00"},
+      ],
+      scheduled: Timestamp.fromDate(new Date()),
+    });
+  await getFirestore()
+    .collection("schedules")
+    .add({
+      question: "Heb je je middag-pillen geslikt?",
+      answers: ["Ja", "Nee"],
+      chat: ctx.chat?.id,
+      schedule: [
+        {"type": "daily timed", "time": "13:00:00"},
+      ],
+      scheduled: Timestamp.fromDate(new Date()),
+    });
+  await getFirestore()
+    .collection("schedules")
+    .add({
+      question: "Heb je je avond-pillen geslikt?",
+      answers: ["Ja", "Nee"],
+      chat: ctx.chat?.id,
+      schedule: [
+        {"type": "daily timed", "time": "21:00:00"},
+      ],
+      scheduled: Timestamp.fromDate(new Date()),
+    });
 }
 
 // eslint-disable-next-line require-jsdoc
@@ -31,8 +65,16 @@ async function clearSchedules(ctx:Context) {
   mySchedules.forEach( (doc) => {
     repos.doc(doc.id).delete();
   });
-}
 
+  const myQuestions = await getFirestore()
+    .collection("questions")
+    .where("chat", "==", ctx.chat?.id)
+    .get();
+  myQuestions.forEach( (doc) => {
+    getFirestore().collection("questions")
+      .doc(doc.id).delete();
+  });
+}
 
 // eslint-disable-next-line require-jsdoc
 export default function webhookCallbackA(bot:Telegraf) {
@@ -41,6 +83,7 @@ export default function webhookCallbackA(bot:Telegraf) {
 
   // 1. Create a schedule (telegram webhook)
   bot.command("remind", createSchedule);
+  bot.command("debug", debugSchedule);
 
   // Clear all schedules for this chat
   bot.command("clear", clearSchedules);
@@ -52,13 +95,20 @@ export default function webhookCallbackA(bot:Telegraf) {
   // Todo: see results of questions
 
   // Fallback processing of messages
-  bot.on("message", async (ctx) => {
-    logger.log("Received a message we cannot handle", {
+  bot.on("message", (ctx) => {
+    logger.log("Received a message we didnt handle", {
       message: ctx.message,
       text: ctx.text,
       botname: ctx.botInfo.username,
       chat: ctx.chat.type == "private" ? "private" : ctx.chat.title,
     });
+  });
+  bot.on("callback_query", (ctx) => {
+    logger.log("Received an update we didnt handle", ctx.update );
+    ctx.deleteMessage();
+  } );
+  bot.action(/.+/, (ctx) => {
+    return ctx.answerCbQuery(`Oh, ${ctx.match[0]}! Great choice`);
   });
 
   // That's a wrap

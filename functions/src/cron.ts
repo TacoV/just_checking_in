@@ -1,7 +1,8 @@
 /* eslint-disable require-jsdoc */
 import {getFirestore, Timestamp} from "firebase-admin/firestore";
 import {logger} from "firebase-functions/v2";
-import {Telegraf} from "telegraf";
+import {Telegraf, Markup} from "telegraf";
+import {InlineKeyboardButton} from "telegraf/typings/core/types/typegram";
 
 // 2. Plan questions (cron)
 async function planNextQuestions( ) {
@@ -110,7 +111,20 @@ async function askedPlannedQuestions(bot:Telegraf) {
 
   questions.forEach( (doc) => {
     const savedData = doc.data();
-    bot.telegram.sendMessage(savedData.chat, savedData.question);
+
+    const buttons:InlineKeyboardButton[] = [];
+    savedData.answers.forEach( (answer:string) => {
+      buttons.push( Markup.button.callback(answer, answer));
+    } );
+
+    bot.telegram.sendMessage(
+      savedData.chat,
+      savedData.question,
+      {
+        ...Markup.inlineKeyboard(buttons),
+      }
+    );
+
     repos.doc(doc.id).set({
       "status": "asked",
     }, {merge: true});
