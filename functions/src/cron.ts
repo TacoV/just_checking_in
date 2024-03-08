@@ -1,5 +1,6 @@
 /* eslint-disable require-jsdoc */
 import {getFirestore, Timestamp} from "firebase-admin/firestore";
+import {logger} from "firebase-functions/v2";
 import {Telegraf} from "telegraf";
 
 // 2. Plan questions (cron)
@@ -27,11 +28,16 @@ async function planNextQuestions( ) {
   // resulting in possibly multiple timestamps and a single
   // new horizon. @todo update the terminology to be less
   // confusing
+  logger.log(`We have ${schedules.size} schedules to process`);
+  let nextHorizon = Timestamp.fromDate(new Date("2050-01-01"));
   schedules.forEach( (doc) => {
+    logger.log(`Processing schedule ${doc.id}`);
     const data = doc.data();
     data.schedule.forEach( (d:any) => {
+      logger.log("Processing a schedule", d);
       const {newHorizon, timestamps} = planAhead(d);
       timestamps.forEach((planTimestamp) => {
+        logger.log(`Found timestamp ${planTimestamp}`);
         questionsCollection .add({
           status: "planned", // asked, answered, dropped
           timing: planTimestamp,
@@ -41,12 +47,13 @@ async function planNextQuestions( ) {
         });
       });
 
-      schedulesCollection
-        .doc(doc.id)
-        .set({
-          scheduled: newHorizon,
-        }, {merge: true});
+      nextHorizon = newHorizon < nextHorizon ? newHorizon : nextHorizon;
     });
+    schedulesCollection
+      .doc(doc.id)
+      .set({
+        scheduled: nextHorizon,
+      }, {merge: true});
   });
 }
 
@@ -58,7 +65,7 @@ function planAhead(d:any) {
     return {newHorizon: scheduleHorizon, timestamps: [scheduleHorizon]};
   }
   if ("daily timed" == d.type ) {
-    const [h, m, s] = d.time.split(':');
+    const [h, m, s] = d.time.split(":");
     const nextTime = new Date;
     nextTime.setHours(h, m, s);
     if ( nextTime < new Date ) {
@@ -67,9 +74,14 @@ function planAhead(d:any) {
     const scheduleHorizon = new Date(nextTime);
     scheduleHorizon.setHours(scheduleHorizon.getHours() + 12 );
 
-    return {newHorizon: scheduleHorizon, timestamps: [nextTime]};
+    return {
+      newHorizon: Timestamp.fromDate(scheduleHorizon),
+      timestamps: [nextTime],
+    };
   }
-  return {newHorizon: null, timestamps: []};
+  return {newHorizon: Timestamp.fromDate(
+    new Date((new Date()).getTime() + 2*60*1e3)
+  ), timestamps: []};
 }
 
 // 3. Ask questions (cron)
