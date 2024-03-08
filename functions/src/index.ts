@@ -46,15 +46,16 @@ bot.command("remind", async (ctx) => {
 
 // Clear all schedules for this chat
 bot.command("clear", async (ctx) => {
+  logger.log(`Clear all schedules for chat ${ctx.chat.id}`);
   const repos = getFirestore()
-    .collection("schedules")
+    .collection("schedules");
   const mySchedules = await repos
     .where("chat", "==", ctx.chat.id)
     .get();
-    mySchedules.forEach( doc => {
-      repos.doc(doc.id).delete()
-    })
-})
+  mySchedules.forEach( (doc) => {
+    repos.doc(doc.id).delete();
+  });
+});
 
 // Todo: 4. Process answers (telegram webhook)
 // Todo: list active schedules
@@ -66,27 +67,19 @@ bot.command("clear", async (ctx) => {
 bot.on("message", async (ctx) => {
   // Let's only process text messages, not other updates
   if (ctx.text === undefined ) {
-    logger.log("Ignoring update", {message: ctx.message});
     return;
   }
-
-  // Log the info
-  logger.log("Received unknown command", {
-    botname: ctx.botInfo.username,
-    sender: ctx.message.from.first_name,
-    text: ctx.text,
-    chat: ctx.chat.type == "private" ? "private" : ctx.chat.title,
-  });
 
   // Save info to Firestore too - for now
   const writeResult = await getFirestore()
     .collection("messages")
     .add({
-      action: "Did not process this message!",
       message: ctx.message,
       text: ctx.text,
+      botname: ctx.botInfo.username,
+      chat: ctx.chat.type == "private" ? "private" : ctx.chat.title,
     });
-  ctx.reply(`Did not recognize command, just saved it @${writeResult.id}`);
+  ctx.reply(`Did not recognize command, just saved it ${writeResult.id}`);
 });
 
 // That's a wrap - let's export it to Google!
@@ -98,8 +91,6 @@ exports.telegram = onRequest(bot.webhookCallback());
 
 // 2. Plan questions (cron)
 async function planNextQuestions() {
-  logger.log("Scheduling the next questions to be asked");
-
   const repos = getFirestore()
     .collection("schedules");
 
@@ -108,11 +99,9 @@ async function planNextQuestions() {
     .get();
 
   if (schedules.empty) {
-    logger.log("We're up to date, nothing new to schedule right now");
     return;
   }
 
-  logger.log(`Planning questions for ${schedules.size} schedules`);
   const inFiveMinutes = new Date((new Date()).getTime() + 5*60*1e3);
   schedules.forEach( (doc) => {
     const data = doc.data();
@@ -131,14 +120,10 @@ async function planNextQuestions() {
         scheduled: Timestamp.fromDate(inFiveMinutes),
       }, {merge: true});
   });
-
-  logger.log("Done - ready to ask them later.");
 }
 
 // 3. Ask questions (cron)
 async function askedPlannedQuestions() {
-  logger.log("Checking for unasked questions.");
-
   const repos = getFirestore()
     .collection("questions");
 
@@ -148,20 +133,16 @@ async function askedPlannedQuestions() {
     .get();
 
   if (questions.empty) {
-    logger.log("No due unasked questions found.");
     return;
   }
 
   questions.forEach( (doc) => {
-    logger.log("Asking a questions!");
     const savedData = doc.data();
     bot.telegram.sendMessage(savedData.chat, savedData.question);
     repos.doc(doc.id).set({
       "status": "asked",
     }, {merge: true});
   });
-
-  logger.log("Done asking questions for now.");
 }
 
 // That's a wrap - let's export it to Google!
