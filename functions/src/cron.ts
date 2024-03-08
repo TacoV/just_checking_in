@@ -59,10 +59,20 @@ async function planNextQuestions( ) {
 
 function planAhead(d:any) {
   if ("often" == d.type ) {
-    const scheduleHorizon = Timestamp.fromDate(
-      new Date((new Date()).getTime() + 2*60*1e3)
-    );
-    return {newHorizon: scheduleHorizon, timestamps: [scheduleHorizon]};
+    // Plan 1 hour at a time
+    const scheduleHorizon = new Date((new Date()).getTime() + 60*60*1e3);
+    // Fill in 2min increments
+    const now = new Date;
+    now.setSeconds(0);
+    const timestamps:Timestamp[] = [];
+    while ( now < scheduleHorizon ) {
+      now.setMinutes(now.getMinutes() + 2);
+      timestamps.push( Timestamp.fromDate(now));
+    }
+    return {
+      newHorizon: Timestamp.fromDate(scheduleHorizon),
+      timestamps: timestamps,
+    };
   }
   if ("daily timed" == d.type ) {
     const [h, m, s] = d.time.split(":");
