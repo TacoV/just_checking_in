@@ -27,7 +27,7 @@ async function createSchedule(ctx: Context) {
       answers: ["Ja", "Nee"],
       chat: ctx.chat?.id,
       schedule: [
-        {"type": "daily timed", "time": "08:00:00"},
+        {"type": "daily timed", "time": "07:00:00"},
       ],
       scheduled: Timestamp.fromDate(new Date()),
     });
@@ -38,7 +38,7 @@ async function createSchedule(ctx: Context) {
       answers: ["Ja", "Nee"],
       chat: ctx.chat?.id,
       schedule: [
-        {"type": "daily timed", "time": "13:00:00"},
+        {"type": "daily timed", "time": "12:00:00"},
       ],
       scheduled: Timestamp.fromDate(new Date()),
     });
@@ -49,7 +49,7 @@ async function createSchedule(ctx: Context) {
       answers: ["Ja", "Nee"],
       chat: ctx.chat?.id,
       schedule: [
-        {"type": "daily timed", "time": "21:00:00"},
+        {"type": "daily timed", "time": "20:00:00"},
       ],
       scheduled: Timestamp.fromDate(new Date()),
     });

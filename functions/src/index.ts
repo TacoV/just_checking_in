@@ -16,4 +16,4 @@ initializeApp();
 const bot = new Telegraf(TELEGRAM_API_TOKEN.value());
 
 exports.telegram = onRequest(webhookCallback(bot));
-exports.cron = onSchedule("every 1 minutes", scheduleTick(bot));
+exports.cron = onSchedule("every 5 minutes", scheduleTick(bot));
