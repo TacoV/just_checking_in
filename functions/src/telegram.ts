@@ -90,6 +90,11 @@ export default function webhookCallbackA(bot:Telegraf) {
   // Todo: edit schedules
   // Todo: see results of questions
 
+  bot.action(/answer-([a-zA-Z0-9]{20})-(\d+)/, (ctx) => {
+    return ctx.answerCbQuery(
+      `You picked answer ${ctx.match[2]}` +
+      ` on question ${ctx.match[1]}`);
+  });
   // Fallback processing of messages
   bot.on("message", (ctx) => {
     logger.log("Received a message we didnt handle", {
