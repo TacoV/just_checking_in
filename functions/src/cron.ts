@@ -25,41 +25,32 @@ async function planNextQuestions( ) {
   const questionsCollection = getFirestore()
     .collection("questions");
 
-  // We now have schedules with an array of schedules,
-  // resulting in possibly multiple timestamps and a single
-  // new horizon. @todo update the terminology to be less
-  // confusing
-  logger.log(`We have ${schedules.size} schedules to process`);
-  let nextHorizon = Timestamp.fromDate(new Date("2050-01-01"));
   schedules.forEach( (doc) => {
-    logger.log(`Processing schedule ${doc.id}`);
     const data = doc.data();
-    data.schedule.forEach( (d:any) => {
-      logger.log("Processing a schedule", d);
-      const {newHorizon, timestamps} = planAhead(d);
-      timestamps.forEach((planTimestamp) => {
-        logger.log(`Found timestamp ${planTimestamp}`);
-        questionsCollection .add({
-          status: "planned", // asked, answered, dropped
-          timing: planTimestamp,
-          question: data.question,
-          answers: data.answers,
-          chat: data.chat,
-        });
+    const {newHorizon, timestamps} = planAhead(
+      data.type,
+      data.parameters
+    );
+    timestamps.forEach((planTimestamp) => {
+      questionsCollection.add({
+        status: "planned", // asked, answered, dropped
+        timing: planTimestamp,
+        question: data.question,
+        answers: data.answers,
+        chat: data.chat,
       });
-
-      nextHorizon = newHorizon < nextHorizon ? newHorizon : nextHorizon;
     });
+
     schedulesCollection
       .doc(doc.id)
       .set({
-        scheduled: nextHorizon,
+        scheduled: newHorizon,
       }, {merge: true});
   });
 }
 
-function planAhead(d:any) {
-  if ("often" == d.type ) {
+function planAhead(type: string, parameters:any) {
+  if ("often" == type ) {
     // Plan 1 hour at a time
     const scheduleHorizon = new Date((new Date()).getTime() + 60*60*1e3);
     // Fill in 2min increments
@@ -75,13 +66,17 @@ function planAhead(d:any) {
       timestamps: timestamps,
     };
   }
-  if ("daily timed" == d.type ) {
-    const [h, m, s] = d.time.split(":");
+
+  if ("daily" == type ) {
+    const [h, m, s] = parameters.time.split(":");
     const nextTime = new Date;
+    logger.log("nextTime(1)", nextTime);
     nextTime.setHours(h, m, s);
+    logger.log("nextTime(2)", nextTime);
     if ( nextTime < new Date ) {
       nextTime.setDate(nextTime.getDate() + 1);
     }
+    logger.log("nextTime(3)", nextTime);
     const scheduleHorizon = new Date(nextTime);
     scheduleHorizon.setHours(scheduleHorizon.getHours() + 12 );
 
@@ -134,6 +129,8 @@ async function askedPlannedQuestions(bot:Telegraf) {
 // That's a wrap - let's export it to Google!
 export default function(bot:Telegraf) {
   return () => {
+    const nu = new Date;
+    logger.log("Het is nu ${nu}", nu);
     planNextQuestions();
     askedPlannedQuestions(bot);
   };

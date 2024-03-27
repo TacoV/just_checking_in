@@ -10,9 +10,8 @@ async function debugSchedule(ctx: Context) {
       question: "Does this work?",
       answers: ["Yes", "No"],
       chat: ctx.chat?.id,
-      schedule: [
-        {"type": "often"},
-      ],
+      type: "often",
+      parameters: {},
       scheduled: Timestamp.fromDate(new Date()),
     });
 }
@@ -26,9 +25,8 @@ async function createSchedule(ctx: Context) {
       question: "Heb je je ochtend-pillen geslikt?",
       answers: ["Ja", "Nee"],
       chat: ctx.chat?.id,
-      schedule: [
-        {"type": "daily timed", "time": "08:00:00"},
-      ],
+      type: "daily",
+      parameters: {"time": "07:00:00"},
       scheduled: Timestamp.fromDate(new Date()),
     });
   await getFirestore()
@@ -37,9 +35,8 @@ async function createSchedule(ctx: Context) {
       question: "Heb je je middag-pillen geslikt?",
       answers: ["Ja", "Nee"],
       chat: ctx.chat?.id,
-      schedule: [
-        {"type": "daily timed", "time": "13:00:00"},
-      ],
+      type: "daily",
+      parameters: {"time": "12:00:00"},
       scheduled: Timestamp.fromDate(new Date()),
     });
   await getFirestore()
@@ -48,9 +45,8 @@ async function createSchedule(ctx: Context) {
       question: "Heb je je avond-pillen geslikt?",
       answers: ["Ja", "Nee"],
       chat: ctx.chat?.id,
-      schedule: [
-        {"type": "daily timed", "time": "21:00:00"},
-      ],
+      type: "daily",
+      parameters: {"time": "20:00:00"},
       scheduled: Timestamp.fromDate(new Date()),
     });
 }
@@ -105,6 +101,7 @@ export default function webhookCallbackA(bot:Telegraf) {
   });
   bot.on("callback_query", (ctx) => {
     logger.log("Received an update we didnt handle", ctx.update );
+    ctx.answerCbQuery("Message received");
     ctx.deleteMessage();
   } );
   bot.action(/.+/, (ctx) => {
