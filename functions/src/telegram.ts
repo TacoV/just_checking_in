@@ -90,7 +90,7 @@ export default function webhookCallbackA(bot:Telegraf) {
   // Todo: edit schedules
   // Todo: see results of questions
 
-  bot.action(/answer-([a-zA-Z0-9]{20})-(\d+)/, (ctx) => {
+  bot.action(/doc([a-zA-Z0-9]{20})-answer(\d+)/, (ctx) => {
     return ctx.answerCbQuery(
       `You picked answer ${ctx.match[2]}` +
       ` on question ${ctx.match[1]}`);

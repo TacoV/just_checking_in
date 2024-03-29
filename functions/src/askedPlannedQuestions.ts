@@ -1,6 +1,5 @@
 import {getFirestore, Timestamp} from "firebase-admin/firestore";
 import {Telegraf, Markup} from "telegraf";
-import {InlineKeyboardButton} from "telegraf/typings/core/types/typegram";
 
 // 3. Ask questions (cron)
 export async function askedPlannedQuestions(bot: Telegraf) {
@@ -19,10 +18,13 @@ export async function askedPlannedQuestions(bot: Telegraf) {
   questions.forEach((doc) => {
     const savedData = doc.data();
 
-    const buttons: InlineKeyboardButton[] = [];
-    savedData.answers.forEach((answer: string) => {
-      buttons.push(Markup.button.callback(answer, answer));
-    });
+    const buttons = savedData.answers.map( (answer:string, key:number) =>
+      Markup.button.callback(
+        answer,
+        "doc" + doc.id +
+        "-answer" + key
+      )
+    );
 
     bot.telegram.sendMessage(
       savedData.chat,
