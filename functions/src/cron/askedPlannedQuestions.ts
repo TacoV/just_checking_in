@@ -1,5 +1,6 @@
 import {getFirestore, Timestamp} from "firebase-admin/firestore";
 import {Telegraf, Markup} from "telegraf";
+import {question} from "../types/question";
 
 // 3. Ask questions (cron)
 export async function askedPlannedQuestions(bot: Telegraf) {
@@ -16,7 +17,7 @@ export async function askedPlannedQuestions(bot: Telegraf) {
   }
 
   questions.forEach((doc) => {
-    const savedData = doc.data();
+    const savedData = doc.data() as question;
 
     const buttons = savedData.answers.map( (answer:string, key:number) =>
       Markup.button.callback(

@@ -6,13 +6,12 @@ import {initializeApp} from "firebase-admin/app";
 
 import {Telegraf} from "telegraf";
 
-import webhookCallback from "./webhookCallback";
-import scheduleTick from "./cron";
-
-const TELEGRAM_API_TOKEN = defineString("TELEGRAM_API_TOKEN");
+import webhookCallback from "./telegram/webhookCallback";
+import scheduleTick from "./cron/scheduleTick";
 
 initializeApp();
 
+const TELEGRAM_API_TOKEN = defineString("TELEGRAM_API_TOKEN");
 const bot = new Telegraf(TELEGRAM_API_TOKEN.value());
 
 exports.telegram = onRequest(

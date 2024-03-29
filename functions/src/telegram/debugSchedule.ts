@@ -1,6 +1,6 @@
 import {getFirestore, Timestamp} from "firebase-admin/firestore";
 import {Context} from "telegraf";
-
+import {schedule} from "../types/schedule";
 
 export default async function debugSchedule(ctx: Context) {
   await getFirestore()
@@ -12,5 +12,5 @@ export default async function debugSchedule(ctx: Context) {
       type: "often",
       parameters: {"minutes": 5},
       scheduled: Timestamp.fromDate(new Date()),
-    });
+    } as schedule);
 }

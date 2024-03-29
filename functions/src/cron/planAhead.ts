@@ -1,10 +1,11 @@
 import {Timestamp} from "firebase-admin/firestore";
 import {DateTime} from "luxon";
+import {dailyScheduleParams, oftenScheduleParams} from "../types/schedule";
 
 /*
  * Fill next hour with a message every x minutes
  */
-function planOften(parameters: {minutes: number}) {
+function planOften(parameters: oftenScheduleParams) {
   const now = DateTime.now().setLocale("nl").setZone("Europe/Amsterdam");
   const interval: number = parameters.minutes;
 
@@ -30,7 +31,7 @@ function planOften(parameters: {minutes: number}) {
  * Remind at standard time each day
  * Localized to NL
  */
-function planDaily(parameters: {time: string}) {
+function planDaily(parameters: dailyScheduleParams) {
   const [h, m] = parameters.time.split(":")
     .map( (str: string) => parseInt(str) );
 

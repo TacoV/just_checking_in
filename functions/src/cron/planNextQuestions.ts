@@ -1,13 +1,14 @@
 import {DocumentData, getFirestore,
   QueryDocumentSnapshot, Timestamp} from "firebase-admin/firestore";
 import {getPlanner} from "./planAhead";
-
+import {schedule} from "../types/schedule";
+import {question} from "../types/question";
 
 const planSchedule = (doc: QueryDocumentSnapshot<DocumentData>) => {
   const schedulesCollection = getFirestore().collection("schedules");
   const questionsCollection = getFirestore().collection("questions");
 
-  const data = doc.data();
+  const data = doc.data() as schedule;
 
   const planner = getPlanner(data.type);
   const {
@@ -22,7 +23,7 @@ const planSchedule = (doc: QueryDocumentSnapshot<DocumentData>) => {
       question: data.question,
       answers: data.answers,
       chat: data.chat,
-    });
+    } as question);
   });
 
   schedulesCollection
