@@ -101,7 +101,9 @@ export default function webhookCallbackA(bot:Telegraf) {
     const answer = question.data()?.answers[ctx.match[2]];
     doc.set({
       status: "answered",
+      answer: answer,
     }, {merge: true});
+    ctx.deleteMessage();
     return ctx.answerCbQuery(`Je koos ${answer}`);
   });
 
