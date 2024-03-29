@@ -12,7 +12,7 @@ const planSchedule = (doc: QueryDocumentSnapshot<DocumentData>) => {
   const planner = getPlanner(data.type);
   const {
     timestamps: timestamps,
-    nextPlanMoment: nextPlanMoment
+    nextPlanMoment: nextPlanMoment,
   } = planner(data.parameters);
 
   timestamps.forEach((timing) => {

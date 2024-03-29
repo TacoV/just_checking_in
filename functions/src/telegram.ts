@@ -11,7 +11,7 @@ async function debugSchedule(ctx: Context) {
       answers: ["Yes", "No"],
       chat: ctx.chat?.id,
       type: "often",
-      parameters: {},
+      parameters: {"minutes": 3},
       scheduled: Timestamp.fromDate(new Date()),
     });
 }
