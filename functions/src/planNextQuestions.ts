@@ -17,7 +17,7 @@ const planSchedule = (doc: QueryDocumentSnapshot<DocumentData>) => {
 
   timestamps.forEach((timing) => {
     questionsCollection.add({
-      status: "planned", // asked, answered, dropped
+      status: "planned",
       timing: timing,
       question: data.question,
       answers: data.answers,

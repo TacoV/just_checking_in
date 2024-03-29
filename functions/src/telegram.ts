@@ -1,6 +1,5 @@
 import {getFirestore, Timestamp} from "firebase-admin/firestore";
 import {Telegraf, Context} from "telegraf";
-import {logger} from "firebase-functions/v2";
 
 // eslint-disable-next-line require-jsdoc
 async function debugSchedule(ctx: Context) {
@@ -89,28 +88,21 @@ export default function webhookCallbackA(bot:Telegraf) {
   // Todo: delete schedules
   // Todo: edit schedules
   // Todo: see results of questions
+  // Todo: set old unanswered questions to status dropped
 
-  bot.action(/doc([a-zA-Z0-9]{20})-answer(\d+)/, (ctx) => {
-    return ctx.answerCbQuery(
-      `You picked answer ${ctx.match[2]}` +
-      ` on question ${ctx.match[1]}`);
-  });
-  // Fallback processing of messages
-  bot.on("message", (ctx) => {
-    logger.log("Received a message we didnt handle", {
-      message: ctx.message,
-      text: ctx.text,
-      botname: ctx.botInfo.username,
-      chat: ctx.chat.type == "private" ? "private" : ctx.chat.title,
-    });
-  });
-  bot.on("callback_query", (ctx) => {
-    logger.log("Received an update we didnt handle", ctx.update );
-    ctx.answerCbQuery("Message received");
-    ctx.deleteMessage();
-  } );
-  bot.action(/.+/, (ctx) => {
-    return ctx.answerCbQuery(`Oh, ${ctx.match[0]}! Great choice`);
+  bot.action(/doc([a-zA-Z0-9]{20})-answer(\d+)/, async (ctx) => {
+    const doc = getFirestore()
+      .collection("questions")
+      .doc(ctx.match[1]);
+    const question = await doc.get();
+    if ( !question.exists ) {
+      return ctx.answerCbQuery("Kon document niet vinden!");
+    }
+    const answer = question.data()?.answers[ctx.match[2]];
+    doc.set({
+      status: "answered",
+    }, {merge: true});
+    return ctx.answerCbQuery(`Je koos ${answer}`);
   });
 
   // That's a wrap
