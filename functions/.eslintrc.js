@@ -28,5 +28,16 @@ module.exports = {
     "quotes": ["warn", "double"],
     "import/no-unresolved": 0,
     "indent": ["warn", 2],
+    "require-jsdoc": [
+      "error", {
+        require: {
+          FunctionDeclaration: false,
+          MethodDefinition: false,
+          ClassDeclaration: false,
+          ArrowFunctionExpression: false,
+          FunctionExpression: false,
+        },
+      },
+    ],
   },
 };

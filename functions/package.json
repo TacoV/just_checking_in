@@ -17,6 +17,7 @@
   "dependencies": {
     "firebase-admin": "^11.11.1",
     "firebase-functions": "^4.8.1",
+    "luxon": "^3.4.4",
     "telegraf": "^4.16.3"
   },
   "devDependencies": {
