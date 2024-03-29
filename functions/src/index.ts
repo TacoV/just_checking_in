@@ -17,7 +17,43 @@ const bot = new Telegraf(TELEGRAM_API_TOKEN.value());
 
 exports.telegram = onRequest(webhookCallback(bot));
 exports.cron = onSchedule(
-  {schedule: "every 5 minutes",
-    timeZone: "Europe/Amsterdam"},
+  {schedule: "every 5 minutes"},
   scheduleTick(bot)
 );
+
+/*
+import { onRequest } from "firebase-functions/v2/https";
+import { initializeApp } from "firebase-admin/app";
+import { DateTime } from "luxon";
+import { Timestamp } from "firebase-admin/firestore";
+
+initializeApp()
+
+exports.test = onRequest(
+  (req, res) => {
+    let result = "Well hello there!<br />";
+
+    const now = DateTime.now().setLocale('nl').setZone('Europe/Amsterdam');
+    let planFor = now.startOf('hour').plus({ hours: 1 });
+    const planEnd = now.startOf('hour').plus({ hours: 2 });
+
+    result += 'planFor: '
+    result += planFor.setLocale('nl').setZone('Europe/Amsterdam').toLocaleString(DateTime.DATETIME_FULL)
+    result += '<br />'
+  
+    result += 'planEnd: '
+    result += planEnd.setLocale('nl').setZone('Europe/Amsterdam').toLocaleString(DateTime.DATETIME_FULL)
+    result += '<br />'
+
+    const timestamps: Timestamp[] = [];
+
+    while (planFor < planEnd) {
+      timestamps.push(Timestamp.fromDate(planFor.toJSDate()));
+      result += "Timestamp: " + planFor.toLocaleString(DateTime.DATETIME_FULL) + "<br />";
+      planFor = planFor.plus({ minutes: 2 });
+    }
+    
+    res.status(200).send(result);
+  }
+);
+*/

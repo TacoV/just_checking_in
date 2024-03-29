@@ -1,4 +1,3 @@
-/* eslint-disable require-jsdoc */
 import {Telegraf} from "telegraf";
 
 import {planNextQuestions} from "./planNextQuestions";
