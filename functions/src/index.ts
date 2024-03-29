@@ -37,22 +37,13 @@ exports.test = onRequest(
     let planFor = now.startOf('hour').plus({ hours: 1 });
     const planEnd = now.startOf('hour').plus({ hours: 2 });
 
-    result += 'planFor: '
-    result += planFor.setLocale('nl').setZone('Europe/Amsterdam').toLocaleString(DateTime.DATETIME_FULL)
-    result += '<br />'
-  
-    result += 'planEnd: '
-    result += planEnd.setLocale('nl').setZone('Europe/Amsterdam').toLocaleString(DateTime.DATETIME_FULL)
-    result += '<br />'
-
     const timestamps: Timestamp[] = [];
 
     while (planFor < planEnd) {
       timestamps.push(Timestamp.fromDate(planFor.toJSDate()));
-      result += "Timestamp: " + planFor.toLocaleString(DateTime.DATETIME_FULL) + "<br />";
       planFor = planFor.plus({ minutes: 2 });
     }
-    
+
     res.status(200).send(result);
   }
 );

@@ -26,7 +26,7 @@ async function createSchedule(ctx: Context) {
       answers: ["Ja", "Nee"],
       chat: ctx.chat?.id,
       type: "daily",
-      parameters: {"time": "07:00:00"},
+      parameters: {"time": "07:00"},
       scheduled: Timestamp.fromDate(new Date()),
     });
   await getFirestore()
@@ -36,7 +36,7 @@ async function createSchedule(ctx: Context) {
       answers: ["Ja", "Nee"],
       chat: ctx.chat?.id,
       type: "daily",
-      parameters: {"time": "12:00:00"},
+      parameters: {"time": "12:00"},
       scheduled: Timestamp.fromDate(new Date()),
     });
   await getFirestore()
@@ -46,7 +46,7 @@ async function createSchedule(ctx: Context) {
       answers: ["Ja", "Nee"],
       chat: ctx.chat?.id,
       type: "daily",
-      parameters: {"time": "20:00:00"},
+      parameters: {"time": "20:00"},
       scheduled: Timestamp.fromDate(new Date()),
     });
 }

@@ -6,15 +6,19 @@ import {getPlanner} from "./planAhead";
 const planSchedule = (doc: QueryDocumentSnapshot<DocumentData>) => {
   const schedulesCollection = getFirestore().collection("schedules");
   const questionsCollection = getFirestore().collection("questions");
+
   const data = doc.data();
 
   const planner = getPlanner(data.type);
-  const {newHorizon, timestamps} = planner(data.parameters);
+  const {
+    timestamps: timestamps,
+    nextPlanMoment: nextPlanMoment
+  } = planner(data.parameters);
 
-  timestamps.forEach((planTimestamp) => {
+  timestamps.forEach((timing) => {
     questionsCollection.add({
       status: "planned", // asked, answered, dropped
-      timing: planTimestamp,
+      timing: timing,
       question: data.question,
       answers: data.answers,
       chat: data.chat,
@@ -24,7 +28,7 @@ const planSchedule = (doc: QueryDocumentSnapshot<DocumentData>) => {
   schedulesCollection
     .doc(doc.id)
     .set({
-      scheduled: newHorizon,
+      scheduled: nextPlanMoment,
     }, {merge: true});
 };
 
