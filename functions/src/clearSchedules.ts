@@ -1,7 +1,7 @@
 import {getFirestore} from "firebase-admin/firestore";
 import {Context} from "telegraf";
 
-export async function clearSchedules(ctx: Context) {
+export default async function clearSchedules(ctx: Context) {
   const repos = getFirestore()
     .collection("schedules");
 

@@ -2,7 +2,7 @@ import {getFirestore, Timestamp} from "firebase-admin/firestore";
 import {Context} from "telegraf";
 
 
-export async function debugSchedule(ctx: Context) {
+export default async function debugSchedule(ctx: Context) {
   await getFirestore()
     .collection("schedules")
     .add({

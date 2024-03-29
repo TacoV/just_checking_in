@@ -1,8 +1,9 @@
 import {getFirestore} from "firebase-admin/firestore";
 import {Telegraf} from "telegraf";
-import {clearSchedules} from "./clearSchedules";
-import {createSchedule} from "./createSchedule";
-import {debugSchedule} from "./debugSchedule";
+import clearSchedules from "./clearSchedules";
+import createSchedule from "./createSchedule";
+import debugSchedule from "./debugSchedule";
+
 
 export default function webhookCallback(bot: Telegraf) {
   bot.start((ctx) => ctx.reply("Yeah daar gaan we"));

@@ -1,7 +1,7 @@
 import {getFirestore, Timestamp} from "firebase-admin/firestore";
 import {Context} from "telegraf";
 
-export async function createSchedule(ctx: Context) {
+export default async function createSchedule(ctx: Context) {
   [{time: "7:30", what: "ochtend"},
     {time: "12:30", what: "middag"},
     {time: "20:30", what: "avond"}]
