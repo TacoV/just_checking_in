@@ -1,6 +1,6 @@
 ## This bot
 
-This Telegram bot, live as [@just_checking_in_bot](t.me/just_checking_in_bot),
+This Telegram bot, live as [@just_checking_in_bot](https://t.me/just_checking_in_bot),
 helps you remind stuff or record stuff. Currently it's useable only as a thridaily
 reminder to take your medications.
 
