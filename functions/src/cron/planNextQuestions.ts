@@ -21,7 +21,6 @@ const planSchedule = (doc: QueryDocumentSnapshot<DocumentData>) => {
       status: "planned",
       timing: timing,
       question: data.question,
-      answers: data.answers,
       chat: data.chat,
     } as question);
   });
