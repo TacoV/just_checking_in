@@ -9,7 +9,7 @@ export default async function sleepSchedule(ctx: Context) {
     .add({
       question: {
         question: "Hoe heb je geslapen?",
-        answers: ["😩", "😊", "😴"],
+        answers: ["😩", "😑", "😴"],
       },
       chat: ctx.chat?.id,
       type: "often",
