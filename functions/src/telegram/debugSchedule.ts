@@ -1,7 +1,6 @@
 import {getFirestore, Timestamp} from "firebase-admin/firestore";
 import {Context} from "telegraf";
 import {schedule} from "../types/schedule";
-
 export default async function debugSchedule(ctx: Context) {
   await getFirestore()
     .collection("schedules")
@@ -10,7 +9,10 @@ export default async function debugSchedule(ctx: Context) {
       answers: ["Yes", "No"],
       chat: ctx.chat?.id,
       type: "often",
-      parameters: {"minutes": 5},
+      parameters: {
+        "minutes": 5,
+        "firstrun": true,
+      },
       scheduled: Timestamp.fromDate(new Date()),
     } as schedule);
 }

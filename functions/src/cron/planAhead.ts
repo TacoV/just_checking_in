@@ -9,7 +9,9 @@ function planOften(parameters: oftenScheduleParams) {
   const now = DateTime.now().setLocale("nl").setZone("Europe/Amsterdam");
   const interval: number = parameters.minutes;
 
-  let planFor = now.startOf("hour").plus({hours: 1});
+  let planFor = parameters.firstrun ?
+    now :
+    now.startOf("hour").plus({hours: 1});
   const planEnd = now.startOf("hour").plus({hours: 2});
 
   const timestamps: Timestamp[] = [];
@@ -20,9 +22,10 @@ function planOften(parameters: oftenScheduleParams) {
   }
 
   return {
+    parameters: {...parameters, firstrun: false},
     timestamps: timestamps,
     nextPlanMoment: Timestamp.fromDate(
-      planEnd.minus({minutes: 15}).toJSDate()
+      planEnd.minus({minutes: 10}).toJSDate()
     ),
   };
 }
@@ -46,6 +49,7 @@ function planDaily(parameters: dailyScheduleParams) {
   const nextPlanMoment = nextQuestion.plus({hours: 20});
 
   return {
+    parameters: parameters,
     timestamps: [Timestamp.fromDate(nextQuestion.toJSDate())],
     nextPlanMoment: Timestamp.fromDate(nextPlanMoment.toJSDate()),
   };
