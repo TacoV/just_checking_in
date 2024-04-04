@@ -9,13 +9,19 @@ export default async function sleepSchedule(ctx: Context) {
     .add({
       question: {
         question: "Hoe heb je geslapen?",
-        answers: ["Slecht", "Redelijk", "Goed"],
+        answers: ["😩", "😊", "😴"],
       },
       chat: ctx.chat?.id,
-      type: "daily",
-      parameters: {time: "07:00"},
+      type: "often",
+      parameters: {
+        "minutes": 5,
+        "firstrun": true,
+      },
+      // parameters: {time: "07:00"},
       scheduled: Timestamp.fromDate(new Date()),
     } as schedule);
 
   ctx.reply("Reminders gezet om 7:00");
 }
+
+

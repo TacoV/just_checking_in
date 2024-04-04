@@ -48,3 +48,8 @@ the planned/asked/answered questions.
 
 Used on a schedule, for our own planning and asking of questions. Used as an
 http endpoint, set as webhook for Telegram, for any Telegram incoming messages.
+
+### Installation
+
+`firebase use --add`
+
