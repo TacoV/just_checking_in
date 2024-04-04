@@ -1,8 +1,10 @@
 import {Telegraf} from "telegraf";
 
 import clearAll from "./clearAll";
+
 import medsSchedule from "./medsSchedule";
 import debugSchedule from "./debugSchedule";
+import sleepSchedule from "./sleepSchedule";
 
 import recordAnswer from "./recordAnswer";
 
@@ -12,6 +14,7 @@ export default function webhookCallback(bot: Telegraf) {
 
   bot.command("remind", medsSchedule);
   bot.command("debug", debugSchedule);
+  bot.command("sleep", sleepSchedule);
 
   bot.command("clear", clearAll);
 

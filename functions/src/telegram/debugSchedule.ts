@@ -5,8 +5,10 @@ export default async function debugSchedule(ctx: Context) {
   await getFirestore()
     .collection("schedules")
     .add({
-      question: "Does this work?",
-      answers: ["Yes", "No"],
+      question: {
+        question: "Does this work?",
+        answers: ["Yes", "No"],
+      },
       chat: ctx.chat?.id,
       type: "often",
       parameters: {

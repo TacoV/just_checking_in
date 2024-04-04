@@ -1,5 +1,6 @@
 import {Composer} from "telegraf";
 import {getFirestore} from "firebase-admin/firestore";
+import {question} from "../types/question";
 
 const composer = new Composer();
 
@@ -12,9 +13,11 @@ composer.action(/doc([a-zA-Z0-9]{20})-answer(\d+)/, async (ctx) => {
     return ctx.answerCbQuery("Kon document niet vinden!");
   }
 
-  const data = question.data();
+  const data = question.data() as question;
 
-  const answer = data?.answers[ctx.match[2]];
+  const answerId = parseInt(ctx.match[2]);
+  const answer = data.question.answers[answerId];
+
   doc.set({
     status: "answered",
     answer: answer,

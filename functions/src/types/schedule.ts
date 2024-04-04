@@ -1,14 +1,15 @@
 import {Timestamp} from "firebase-admin/firestore";
+import {abstractQuestion} from "./question";
 
 export interface oftenScheduleParams {
-  minutes: number
+  minutes: number,
+  firstrun: boolean
 }
 export interface dailyScheduleParams {
   time: string
 }
 export interface schedule {
-  question: string;
-  answers: string[];
+  question: abstractQuestion,
   chat: number;
   type: "often" | "daily";
   parameters: oftenScheduleParams & dailyScheduleParams;

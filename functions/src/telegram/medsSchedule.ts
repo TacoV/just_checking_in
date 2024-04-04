@@ -14,8 +14,10 @@ export default async function medsSchedule(ctx: Context) {
     .forEach((info) => {
       schedulesRepos
         .add({
-          question: `Heb je je ${info.what}-pillen geslikt?`,
-          answers: ["Ja", "Nee"],
+          question: {
+            question: `Heb je je ${info.what}-pillen geslikt?`,
+            answers: ["Ja", "Nee"],
+          },
           chat: ctx.chat?.id,
           type: "daily",
           parameters: {time: info.time},
