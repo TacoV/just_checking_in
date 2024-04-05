@@ -1,4 +1,5 @@
-import {DocumentData, QueryDocumentSnapshot, Timestamp} from "firebase-admin/firestore";
+import {DocumentData, QueryDocumentSnapshot,
+  Timestamp} from "firebase-admin/firestore";
 import {getPlanner} from "./planAhead";
 import db from "../utils/db";
 
@@ -18,14 +19,14 @@ const planSchedule = (doc: QueryDocumentSnapshot<DocumentData>) => {
       timing: timing,
       question: data.question,
       chat: data.chat,
-      answer: null
+      answer: null,
     });
   });
 
   doc.ref.set({
-      parameters: parameters,
-      scheduled: nextPlanMoment,
-    }, {merge: true});
+    parameters: parameters,
+    scheduled: nextPlanMoment,
+  }, {merge: true});
 };
 
 export async function planNextQuestions() {

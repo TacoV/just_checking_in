@@ -14,7 +14,7 @@ composer.action(/doc([a-zA-Z0-9]{20})-answer(\d+)/, async (ctx) => {
   const data = question.data();
 
   if ( data === undefined ) {
-    throw new Error("Impossible undefined found")
+    throw new Error("Impossible undefined found");
   }
   const answerId = parseInt(ctx.match[2]);
   const answer = data.question.answers[answerId];
