@@ -1,10 +1,9 @@
-import {getFirestore, Timestamp} from "firebase-admin/firestore";
+import {Timestamp} from "firebase-admin/firestore";
 import {Context} from "telegraf";
-import {schedule} from "../types/schedule";
+import db from "../utils/db";
 
 export default async function medsSchedule(ctx: Context) {
-  const schedulesRepos = getFirestore()
-    .collection("schedules");
+  const schedulesRepos = db.schedules;
 
   [
     {time: "7:30", what: "ochtend"},
@@ -18,11 +17,11 @@ export default async function medsSchedule(ctx: Context) {
             question: `Heb je je ${info.what}-pillen geslikt?`,
             answers: ["Ja", "Nee"],
           },
-          chat: ctx.chat?.id,
+          chat: ctx.chat?.id ?? 0,
           type: "daily",
           parameters: {time: info.time},
           scheduled: Timestamp.fromDate(new Date()),
-        } as schedule);
+        });
     });
 
   ctx.reply("Reminders gezet om 7:30, 12:30 en 20:30!");

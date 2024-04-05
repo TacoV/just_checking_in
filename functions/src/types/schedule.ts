@@ -12,6 +12,6 @@ export interface schedule {
   question: abstractQuestion,
   chat: number;
   type: "often" | "daily";
-  parameters: oftenScheduleParams & dailyScheduleParams;
+  parameters: oftenScheduleParams | dailyScheduleParams;
   scheduled: Timestamp;
 }

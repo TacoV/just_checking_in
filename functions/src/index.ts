@@ -1,23 +1,19 @@
-import {onRequest} from "firebase-functions/v2/https";
-import {onSchedule} from "firebase-functions/v2/scheduler";
-
-import {defineString} from "firebase-functions/params";
 import {initializeApp} from "firebase-admin/app";
-
-import {Telegraf} from "telegraf";
-
-import webhookCallback from "./telegram/webhookCallback";
-import scheduleTick from "./cron/scheduleTick";
-
 initializeApp();
 
+import {defineString} from "firebase-functions/params";
+import {Telegraf} from "telegraf";
 const TELEGRAM_API_TOKEN = defineString("TELEGRAM_API_TOKEN");
 const bot = new Telegraf(TELEGRAM_API_TOKEN.value());
 
+import {onRequest} from "firebase-functions/v2/https";
+import webhookCallback from "./telegram/webhookCallback";
 exports.telegram = onRequest(
   webhookCallback(bot)
 );
 
+import {onSchedule} from "firebase-functions/v2/scheduler";
+import scheduleTick from "./cron/scheduleTick";
 exports.cron = onSchedule( {schedule: "every 5 minutes"},
   scheduleTick(bot)
 );

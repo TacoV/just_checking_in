@@ -1,40 +1,35 @@
-import {DocumentData, getFirestore,
-  QueryDocumentSnapshot, Timestamp} from "firebase-admin/firestore";
+import {DocumentData, QueryDocumentSnapshot, Timestamp} from "firebase-admin/firestore";
 import {getPlanner} from "./planAhead";
-import {schedule} from "../types/schedule";
-import {question} from "../types/question";
+import db from "../utils/db";
 
 const planSchedule = (doc: QueryDocumentSnapshot<DocumentData>) => {
-  const schedulesCollection = getFirestore().collection("schedules");
-  const questionsCollection = getFirestore().collection("questions");
-
-  const data = doc.data() as schedule;
+  const data = doc.data();
 
   const planner = getPlanner(data.type);
   const {
+    parameters: parameters,
     timestamps: timestamps,
     nextPlanMoment: nextPlanMoment,
   } = planner(data.parameters);
 
   timestamps.forEach((timing) => {
-    questionsCollection.add({
+    db.questions.add({
       status: "planned",
       timing: timing,
       question: data.question,
       chat: data.chat,
-    } as question);
+      answer: null
+    });
   });
 
-  schedulesCollection
-    .doc(doc.id)
-    .set({
+  doc.ref.set({
+      parameters: parameters,
       scheduled: nextPlanMoment,
     }, {merge: true});
 };
 
 export async function planNextQuestions() {
-  const schedulesCollection = getFirestore().collection("schedules");
-  const schedules = await schedulesCollection
+  const schedules = await db.schedules
     .where("scheduled", "<", Timestamp.now())
     .get();
 

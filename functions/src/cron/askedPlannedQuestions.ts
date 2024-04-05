@@ -1,11 +1,10 @@
-import {getFirestore, Timestamp} from "firebase-admin/firestore";
+import {Timestamp} from "firebase-admin/firestore";
 import {Telegraf, Markup} from "telegraf";
-import {question} from "../types/question";
+import db from "../utils/db";
 
 // 3. Ask questions (cron)
 export async function askedPlannedQuestions(bot: Telegraf) {
-  const repos = getFirestore()
-    .collection("questions");
+  const repos = db.questions;
 
   const questions = await repos
     .where("status", "==", "planned")
@@ -17,7 +16,7 @@ export async function askedPlannedQuestions(bot: Telegraf) {
   }
 
   questions.forEach((doc) => {
-    const savedData = doc.data() as question;
+    const savedData = doc.data();
 
     const buttons = savedData.question.answers
       .map( (answer:string, key:number) =>
@@ -37,7 +36,7 @@ export async function askedPlannedQuestions(bot: Telegraf) {
     );
 
     repos.doc(doc.id).set({
-      "status": "asked",
+      status: "asked",
     }, {merge: true});
   });
 }

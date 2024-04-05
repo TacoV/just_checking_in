@@ -1,20 +1,20 @@
-import {getFirestore, Timestamp} from "firebase-admin/firestore";
+import {Timestamp} from "firebase-admin/firestore";
 import {Context} from "telegraf";
-import {schedule} from "../types/schedule";
+import db from "../utils/db";
+
 export default async function debugSchedule(ctx: Context) {
-  await getFirestore()
-    .collection("schedules")
+  await db.schedules
     .add({
       question: {
         question: "Does this work?",
         answers: ["Yes", "No"],
       },
-      chat: ctx.chat?.id,
+      chat: ctx.chat?.id ?? 0,
       type: "often",
       parameters: {
         "minutes": 5,
         "firstrun": true,
       },
       scheduled: Timestamp.fromDate(new Date()),
-    } as schedule);
+    });
 }

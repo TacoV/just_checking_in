@@ -6,8 +6,9 @@ export interface abstractQuestion {
     }
 
 export interface question {
-      status: "planned" | "askes" | "answered" | "dropped",
+      status: "planned" | "asked" | "answered" | "dropped",
       timing: Timestamp,
       question: abstractQuestion
       chat: number
+      answer: string | undefined | null
     }

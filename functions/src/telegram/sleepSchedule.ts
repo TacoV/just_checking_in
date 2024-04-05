@@ -1,27 +1,25 @@
-import {getFirestore, Timestamp} from "firebase-admin/firestore";
+import {Timestamp} from "firebase-admin/firestore";
 import {Context} from "telegraf";
-import {schedule} from "../types/schedule";
+import db from "../utils/db";
 
 export default async function sleepSchedule(ctx: Context) {
-  const schedulesRepos = getFirestore()
-    .collection("schedules");
+  const schedulesRepos = db.schedules;
+
   schedulesRepos
     .add({
       question: {
         question: "Hoe heb je geslapen?",
         answers: ["😩", "😑", "😴"],
       },
-      chat: ctx.chat?.id,
-      type: "often",
+      chat: ctx.chat?.id ?? 0,
+      type: "daily",
       parameters: {
-        "minutes": 5,
-        "firstrun": true,
+        "time": "07:00",
       },
-      // parameters: {time: "07:00"},
       scheduled: Timestamp.fromDate(new Date()),
-    } as schedule);
+    });
 
-  ctx.reply("Reminders gezet om 7:00");
+  ctx.reply("Reminder gezet om 7:00");
 }
 
 

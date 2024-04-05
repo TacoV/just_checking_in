@@ -1,24 +1,20 @@
-import {getFirestore} from "firebase-admin/firestore";
 import {Context} from "telegraf";
+import db from "../utils/db";
 
 export default async function clearAll(ctx: Context) {
-  const repos = getFirestore()
-    .collection("schedules");
-
-  const mySchedules = await repos
+  const mySchedules = await db.schedules
     .where("chat", "==", ctx.chat?.id)
     .get();
 
-  mySchedules.forEach((doc) => {
-    repos.doc(doc.id).delete();
-  });
+  mySchedules.forEach((doc) =>
+    doc.ref.delete()
+  );
 
-  const myQuestions = await getFirestore()
-    .collection("questions")
+  const myQuestions = await db.questions
     .where("chat", "==", ctx.chat?.id)
     .get();
-  myQuestions.forEach((doc) => {
-    getFirestore().collection("questions")
-      .doc(doc.id).delete();
-  });
+
+  myQuestions.forEach((doc) =>
+    doc.ref.delete()
+  );
 }
