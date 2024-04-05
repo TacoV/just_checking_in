@@ -1,12 +1,10 @@
 import {Telegraf} from "telegraf";
 
-import listAll from "./listAll";
-import clearAll from "./clearAll";
-
 import medsSchedule from "./medsSchedule";
 import debugSchedule from "./debugSchedule";
 import sleepSchedule from "./sleepSchedule";
 
+import adminCommands from "./adminCommands";
 import recordAnswer from "./recordAnswer";
 
 export default function webhookCallback(bot: Telegraf) {
@@ -17,9 +15,7 @@ export default function webhookCallback(bot: Telegraf) {
   bot.command("debug", debugSchedule);
   bot.command("sleep", sleepSchedule);
 
-  bot.command("clear", clearAll);
-  bot.command("list", listAll);
-
+  bot.use(adminCommands);
   bot.use(recordAnswer);
 
   // Todo: list active schedules
