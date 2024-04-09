@@ -25,7 +25,11 @@ composer.action(/doc([a-zA-Z0-9]{20})-answer(\d+)/, async (ctx) => {
   }, {merge: true});
 
   ctx.deleteMessage();
-  ctx.reply(`${data.question.question}: ${answer}`);
+  ctx.reply(`${data.question.question}: ${answer}`,
+    {
+      disable_notification: true,
+    }
+  );
 
   return ctx.answerCbQuery(`Je koos ${answer}`);
 });
