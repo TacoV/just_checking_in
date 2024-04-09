@@ -1,14 +1,16 @@
 import {Timestamp} from "firebase-admin/firestore";
 import {Telegraf, Markup} from "telegraf";
+import {DateTime} from "luxon";
 import db from "../utils/db";
 
-// 3. Ask questions (cron)
 export async function askedPlannedQuestions(bot: Telegraf) {
   const repos = db.questions;
 
+  const horizon = DateTime.now().plus({minutes: 10});
+  const timestamp = Timestamp.fromDate(horizon.toJSDate());
   const questions = await repos
     .where("status", "==", "planned")
-    .where("timing", "<", Timestamp.fromDate(new Date()))
+    .where("timing", "<", timestamp)
     .get();
 
   if (questions.empty) {
@@ -32,6 +34,7 @@ export async function askedPlannedQuestions(bot: Telegraf) {
       savedData.question.question,
       {
         ...Markup.inlineKeyboard(buttons),
+        // schedule_date:123
       }
     );
 
