@@ -23,7 +23,7 @@ saves the answer on the question in the collection.
 Future functionality could include:
 
 * Different schedules, eg random points within intervals
-* Recurring actions, eg when answereing "No" to a reminder, remind again in x
+* Recurring actions, eg when answering "No" to a reminder, remind again in x
 minutes
 * Processing of the results, eg to find a correlation between different answers
 * Better insight and management of current schedules, eg seeing what's enabled
@@ -31,6 +31,10 @@ and adjusting it, instead of only blindly clearing it
 * A better test method, eg "/once" to get 1 question
 * Processing of paramaters, eg "/remind <when> <what>" instead of only having it
 pre-programmed
+* Use precise scheduling and a sparser cron schedule, see
+  [#1979](https://github.com/telegraf/telegraf/issues/1979)
+* [Edit messages](https://telegraf.js.org/classes/Telegram.html#editMessageText)
+  instead of deleting and sending
 
 ### Components
 
