@@ -33,8 +33,7 @@ export async function askedPlannedQuestions(bot: Telegraf) {
       savedData.chat,
       savedData.question.question,
       {
-        ...Markup.inlineKeyboard(buttons),
-        // schedule_date:123
+        ...Markup.inlineKeyboard(buttons)
       }
     );
 

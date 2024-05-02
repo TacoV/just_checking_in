@@ -31,8 +31,6 @@ and adjusting it, instead of only blindly clearing it
 * A better test method, eg "/once" to get 1 question
 * Processing of paramaters, eg "/remind <when> <what>" instead of only having it
 pre-programmed
-* Use precise scheduling and a sparser cron schedule, see
-  [#1979](https://github.com/telegraf/telegraf/issues/1979)
 * [Edit messages](https://telegraf.js.org/classes/Telegram.html#editMessageText)
   instead of deleting and sending
 
