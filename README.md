@@ -74,8 +74,13 @@ vi functions/.env
 Install dependencies
 ```
 cd functions
-npm i
+npm install
+npm install firebase-functions@latest firebase-admin@latest --save
 npm audit fix
 cd ..
 ```
 
+Deploy!
+```
+firebase deploy
+```
