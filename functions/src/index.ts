@@ -20,7 +20,7 @@ import scheduleTick from "./cron/scheduleTick";
 exports.cron = onSchedule(
   {
     region: "europe-west3",
-    schedule: "every 5 minutes",
+    schedule: "every 15 minutes",
   },
   scheduleTick(bot)
 );

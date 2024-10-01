@@ -53,5 +53,29 @@ http endpoint, set as webhook for Telegram, for any Telegram incoming messages.
 
 ### Installation
 
-`firebase use --add`
+Install the Firebase CLI tools globally
+
+```
+npm install -g firebase-tools
+```
+
+Connect to the project
+```
+firebase login
+firebase use --add
+```
+
+Store secrets in functions/.env
+```
+cp functions/.env.example functions/.env
+vi functions/.env
+```
+
+Install dependencies
+```
+cd functions
+npm i
+npm audit fix
+cd ..
+```
 

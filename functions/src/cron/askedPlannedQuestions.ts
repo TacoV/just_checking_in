@@ -33,7 +33,7 @@ export async function askedPlannedQuestions(bot: Telegraf) {
       savedData.chat,
       savedData.question.question,
       {
-        ...Markup.inlineKeyboard(buttons)
+        ...Markup.inlineKeyboard(buttons),
       }
     );
 
