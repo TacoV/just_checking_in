@@ -7,26 +7,27 @@ const composer = new Composer();
 composer.command("remind", async (ctx) => {
   const schedulesRepos = db.schedules;
 
-  [
+  const plans = Promise.all( [
     {time: "7:30", what: "ochtend"},
     {time: "12:30", what: "middag"},
     {time: "20:30", what: "avond"},
-  ]
-    .forEach((info) => {
-      schedulesRepos
-        .add({
-          question: {
-            question: `Heb je je ${info.what}-pillen geslikt?`,
-            answers: ["Ja", "Nee"],
-          },
-          chat: ctx.chat?.id ?? 0,
-          type: "daily",
-          parameters: {time: info.time},
-          scheduled: Timestamp.fromDate(new Date()),
-        });
-    });
+  ].map((info) => {
+    schedulesRepos
+      .add({
+        question: {
+          question: `Heb je je ${info.what}-pillen geslikt?`,
+          answers: ["Ja", "Nee"],
+        },
+        chat: ctx.chat?.id ?? 0,
+        type: "daily",
+        parameters: {time: info.time},
+        scheduled: Timestamp.fromDate(new Date()),
+      });
+  } ) );
 
-  ctx.reply("Reminders gezet om 7:30, 12:30 en 20:30!");
+  const result = ctx.reply("Reminders gezet om 7:30, 12:30 en 20:30!");
+
+  return Promise.all([plans, result]);
 } );
 
 composer.command("debug", async (ctx) => {

@@ -29,7 +29,7 @@ export async function askedPlannedQuestions(bot: Telegraf) {
         )
       );
 
-    bot.telegram.sendMessage(
+    const sendMessage = bot.telegram.sendMessage(
       savedData.chat,
       savedData.question.question,
       {
@@ -37,8 +37,10 @@ export async function askedPlannedQuestions(bot: Telegraf) {
       }
     );
 
-    repos.doc(doc.id).set({
+    const saveState = repos.doc(doc.id).update({
       status: "asked",
-    }, {merge: true});
+    });
+
+    return Promise.all([sendMessage, saveState]);
   });
 }

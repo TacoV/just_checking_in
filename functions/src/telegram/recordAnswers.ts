@@ -12,26 +12,23 @@ composer.action(/doc([a-zA-Z0-9]{20})-answer(\d+)/, async (ctx) => {
   }
 
   const data = question.data();
-
   if ( data === undefined ) {
     throw new Error("Impossible undefined found");
   }
+
   const answerId = parseInt(ctx.match[2]);
   const answer = data.question.answers[answerId];
 
-  doc.set({
+  const saveAnswer = doc.update({
     status: "answered",
     answer: answer,
-  }, {merge: true});
+  });
 
-  ctx.deleteMessage();
-  ctx.reply(`${data.question.question}: ${answer}`,
-    {
-      disable_notification: true,
-    }
-  );
-
-  return ctx.answerCbQuery(`Je koos ${answer}`);
+  return Promise.all([
+    saveAnswer,
+    ctx.answerCbQuery(`Je koos ${answer}`),
+    ctx.editMessageText(`${data.question.question}: ${answer}`),
+  ]);
 });
 
 export default composer;

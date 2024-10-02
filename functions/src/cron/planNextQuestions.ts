@@ -13,20 +13,24 @@ const planSchedule = (doc: QueryDocumentSnapshot<DocumentData>) => {
     nextPlanMoment: nextPlanMoment,
   } = planner(data.parameters);
 
-  timestamps.forEach((timing) => {
-    db.questions.add({
-      status: "planned",
-      timing: timing,
-      question: data.question,
-      chat: data.chat,
-      answer: null,
-    });
-  });
+  const addQuestions = Promise.all(
+    timestamps.map( async (timing) =>
+      db.questions.add({
+        status: "planned",
+        timing: timing,
+        question: data.question,
+        chat: data.chat,
+        answer: null,
+      })
+    )
+  );
 
-  doc.ref.set({
+  const addPlan = doc.ref.update({
     parameters: parameters,
     scheduled: nextPlanMoment,
-  }, {merge: true});
+  });
+
+  return Promise.all([addPlan, addQuestions]);
 };
 
 export async function planNextQuestions() {
@@ -38,5 +42,7 @@ export async function planNextQuestions() {
     return;
   }
 
-  schedules.forEach(planSchedule);
+  for ( const doc of schedules.docs ) {
+    await planSchedule(doc);
+  }
 }
