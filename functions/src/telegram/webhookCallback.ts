@@ -4,9 +4,13 @@ import scheduleCommands from "./scheduleCommands";
 import adminCommands from "./adminCommands";
 import recordAnswers from "./recordAnswers";
 
-export default function(bot: Telegraf) {
-  bot.start((ctx) => ctx.reply("Yeah daar gaan we"));
-  bot.help((ctx) => ctx.reply("Ik weet het ook niet, kom ik op terug"));
+export default async (bot: Telegraf) => {
+  bot.start((ctx) => {
+    return ctx.reply("Yeah daar gaan we");
+  });
+  bot.help((ctx) => {
+    return ctx.reply("Ik weet het ook niet, kom ik op terug");
+  });
 
   bot.use(scheduleCommands);
   bot.use(adminCommands);
@@ -17,4 +21,4 @@ export default function(bot: Telegraf) {
   // Todo: set old unanswered questions to status dropped
 
   return bot.webhookCallback();
-}
+};
