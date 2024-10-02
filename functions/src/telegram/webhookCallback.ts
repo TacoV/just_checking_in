@@ -4,7 +4,7 @@ import scheduleCommands from "./scheduleCommands";
 import adminCommands from "./adminCommands";
 import recordAnswers from "./recordAnswers";
 
-export default async (bot: Telegraf) => {
+export default (bot: Telegraf) => {
   bot.start((ctx) => {
     return ctx.reply("Yeah daar gaan we");
   });
