@@ -19,13 +19,15 @@ composer.action(/doc([a-zA-Z0-9]{20})-answer(\d+)/, async (ctx) => {
   const answerId = parseInt(ctx.match[2]);
   const answer = data.question.answers[answerId];
 
+  /*
   const saveAnswer = doc.update({
     status: "answered",
     answer: answer,
   });
+  */
 
   return Promise.all([
-    saveAnswer,
+    doc.delete(),
     ctx.answerCbQuery(`Je koos ${answer}`),
     ctx.editMessageText(`${data.question.question}: ${answer}`),
   ]);
