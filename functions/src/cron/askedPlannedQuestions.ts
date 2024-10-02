@@ -20,14 +20,19 @@ export async function askedPlannedQuestions(bot: Telegraf) {
   questions.forEach((doc) => {
     const savedData = doc.data();
 
-    const buttons = savedData.question.answers
+    const buttons = [savedData.question.answers
       .map( (answer:string, key:number) =>
         Markup.button.callback(
           answer,
-          "doc" + doc.id +
-        "-answer" + key
+          "doc" + doc.id + "-answer" + key
         )
-      );
+      ),
+    [
+      Markup.button.callback(
+        "💤 Snooze",
+        "doc" + doc.id + "-snooze"
+      )],
+    ];
 
     const sendMessage = bot.telegram.sendMessage(
       savedData.chat,
