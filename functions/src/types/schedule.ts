@@ -8,10 +8,14 @@ export interface oftenScheduleParams {
 export interface dailyScheduleParams {
   time: string
 }
+export interface weeklyScheduleParams {
+  day: number
+  time: string
+}
 export interface schedule {
   question: abstractQuestion,
   chat: number;
-  type: "often" | "daily";
-  parameters: oftenScheduleParams | dailyScheduleParams;
+  type: "often" | "daily" | "weekly";
+  parameters: oftenScheduleParams | dailyScheduleParams | weeklyScheduleParams;
   scheduled: Timestamp;
 }

@@ -1,6 +1,7 @@
 import {Timestamp} from "firebase-admin/firestore";
 import {DateTime} from "luxon";
-import {dailyScheduleParams, oftenScheduleParams} from "../types/schedule";
+import {dailyScheduleParams, oftenScheduleParams,
+  weeklyScheduleParams} from "../types/schedule";
 
 /*
  * Fill next hour with a message every x minutes
@@ -55,10 +56,37 @@ function planDaily(parameters: dailyScheduleParams) {
   };
 }
 
+/*
+ * Remind at standard day and time each week
+ * Localized to NL
+ */
+function planWeekly(parameters: weeklyScheduleParams) {
+  const [h, m] = parameters.time.split(":")
+    .map( (str: string) => parseInt(str) );
+  const d = parameters.day;
+
+  const now = DateTime.now()
+    .setLocale("nl").setZone("Europe/Amsterdam");
+  const thisweek = now
+    .startOf("week")
+    .set({day: d, hour: h, minute: m});
+  const nextweek = thisweek.plus({weeks: 1});
+
+  const nextQuestion = now < thisweek ? thisweek : nextweek;
+  const nextPlanMoment = nextQuestion.plus({days: 6, hours: 20});
+
+  return {
+    parameters: parameters,
+    timestamps: [Timestamp.fromDate(nextQuestion.toJSDate())],
+    nextPlanMoment: Timestamp.fromDate(nextPlanMoment.toJSDate()),
+  };
+}
+
 export function getPlanner(type: string) {
   switch (type) {
   case "often": return planOften;
   case "daily": return planDaily;
+  case "weekly": return planWeekly;
   }
   throw new Error("Unknown type");
 }
