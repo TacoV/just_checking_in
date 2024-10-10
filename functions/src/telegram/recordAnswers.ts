@@ -31,8 +31,8 @@ composer.action(/doc([a-zA-Z0-9]{20})-answer(\d+)/, async (ctx) => {
   return Promise.all([
     doc.delete(),
     ctx.answerCbQuery(`Je koos ${answer}`),
-    ctx.editMessageText(`${data.question.question}: ${answer}`),
-    ctx.editMessageReplyMarkup(undefined),
+    ctx.editMessageText(`${data.question.question}: ${answer}`
+      , {reply_markup: undefined} ),
   ]);
 }).action(/doc([a-zA-Z0-9]{20})-snooze/, async (ctx) => {
   const doc = db.questions.doc(ctx.match[1]);

@@ -69,7 +69,7 @@ function planWeekly(parameters: weeklyScheduleParams) {
     .setLocale("nl").setZone("Europe/Amsterdam");
   const thisweek = now
     .startOf("week")
-    .set({day: d, hour: h, minute: m});
+    .set({weekday: d, hour: h, minute: m});
   const nextweek = thisweek.plus({weeks: 1});
 
   const nextQuestion = now < thisweek ? thisweek : nextweek;

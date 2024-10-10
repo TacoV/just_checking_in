@@ -1,5 +1,6 @@
 import {Timestamp} from "firebase-admin/firestore";
 import {abstractQuestion} from "./question";
+import {WeekdayNumbers} from "luxon";
 
 export interface oftenScheduleParams {
   minutes: number,
@@ -9,7 +10,7 @@ export interface dailyScheduleParams {
   time: string
 }
 export interface weeklyScheduleParams {
-  day: number
+  day: WeekdayNumbers
   time: string
 }
 export interface schedule {
