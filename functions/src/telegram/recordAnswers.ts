@@ -51,7 +51,7 @@ composer.action(/doc([a-zA-Z0-9]{20})-answer(\d+)/, async (ctx) => {
     doc.update({
       status: "planned",
       timing: Timestamp.fromDate(
-        DateTime.now().plus({minutes: 10}).toJSDate()
+        DateTime.now().plus({minutes: 30}).toJSDate()
       ),
     }),
     ctx.answerCbQuery("Tot straks!"),
