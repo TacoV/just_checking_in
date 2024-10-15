@@ -1,9 +1,9 @@
-import {Timestamp} from "firebase-admin/firestore";
-import {abstractQuestion} from "./question";
-import {WeekdayNumbers} from "luxon";
+import { Timestamp } from 'firebase-admin/firestore'
+import { abstractQuestion } from './question'
+import { WeekdayNumbers } from 'luxon'
 
 export interface oftenScheduleParams {
-  minutes: number,
+  minutes: number
   firstrun: boolean
 }
 export interface dailyScheduleParams {
@@ -14,9 +14,9 @@ export interface weeklyScheduleParams {
   time: string
 }
 export interface schedule {
-  question: abstractQuestion,
-  chat: number;
-  type: "often" | "daily" | "weekly";
-  parameters: oftenScheduleParams | dailyScheduleParams | weeklyScheduleParams;
-  scheduled: Timestamp;
+  question: abstractQuestion
+  chat: number
+  type: 'often' | 'daily' | 'weekly'
+  parameters: oftenScheduleParams | dailyScheduleParams | weeklyScheduleParams
+  scheduled: Timestamp
 }

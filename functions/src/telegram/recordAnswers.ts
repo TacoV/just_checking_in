@@ -1,25 +1,25 @@
-import {Composer} from "telegraf";
-import db from "../utils/db";
-import {Timestamp} from "firebase-admin/firestore";
-import {DateTime} from "luxon";
+import { Composer } from 'telegraf'
+import db from '../utils/db'
+import { Timestamp } from 'firebase-admin/firestore'
+import { DateTime } from 'luxon'
 
-const composer = new Composer();
+const composer = new Composer()
 
 composer.action(/doc([a-zA-Z0-9]{20})-answer(\d+)/, async (ctx) => {
-  const doc = db.questions.doc(ctx.match[1]);
+  const doc = db.questions.doc(ctx.match[1])
 
-  const question = await doc.get();
+  const question = await doc.get()
   if (!question.exists) {
-    return ctx.answerCbQuery("Kon document niet vinden!");
+    return ctx.answerCbQuery('Kon document niet vinden!')
   }
 
-  const data = question.data();
-  if ( data === undefined ) {
-    throw new Error("Impossible undefined found");
+  const data = question.data()
+  if (data === undefined) {
+    throw new Error('Impossible undefined found')
   }
 
-  const answerId = parseInt(ctx.match[2]);
-  const answer = data.question.answers[answerId];
+  const answerId = parseInt(ctx.match[2])
+  const answer = data.question.answers[answerId]
 
   /*
   const saveAnswer = doc.update({
@@ -32,31 +32,31 @@ composer.action(/doc([a-zA-Z0-9]{20})-answer(\d+)/, async (ctx) => {
     doc.delete(),
     ctx.answerCbQuery(`Je koos ${answer}`),
     ctx.editMessageText(`${data.question.question}: ${answer}`
-      , {reply_markup: undefined} ),
-  ]);
+      , { reply_markup: undefined }),
+  ])
 }).action(/doc([a-zA-Z0-9]{20})-snooze/, async (ctx) => {
-  const doc = db.questions.doc(ctx.match[1]);
+  const doc = db.questions.doc(ctx.match[1])
 
-  const question = await doc.get();
+  const question = await doc.get()
   if (!question.exists) {
-    return ctx.answerCbQuery("Kon document niet vinden!");
+    return ctx.answerCbQuery('Kon document niet vinden!')
   }
 
-  const data = question.data();
-  if ( data === undefined ) {
-    throw new Error("Impossible undefined found");
+  const data = question.data()
+  if (data === undefined) {
+    throw new Error('Impossible undefined found')
   }
 
   return Promise.all([
     doc.update({
-      status: "planned",
+      status: 'planned',
       timing: Timestamp.fromDate(
-        DateTime.now().plus({minutes: 30}).toJSDate()
+        DateTime.now().plus({ minutes: 30 }).toJSDate(),
       ),
     }),
-    ctx.answerCbQuery("Tot straks!"),
+    ctx.answerCbQuery('Tot straks!'),
     ctx.deleteMessage(),
-  ]);
-});
+  ])
+})
 
-export default composer;
+export default composer
