@@ -84,9 +84,9 @@ function planWeekly(parameters: weeklyScheduleParams) {
 
 export function getPlanner(type: string) {
   switch (type) {
-  case "often": return planOften;
-  case "daily": return planDaily;
-  case "weekly": return planWeekly;
+    case "often": return planOften;
+    case "daily": return planDaily;
+    case "weekly": return planWeekly;
   }
   throw new Error("Unknown type");
 }

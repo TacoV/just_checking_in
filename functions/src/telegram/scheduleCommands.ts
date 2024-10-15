@@ -12,7 +12,7 @@ composer.command("remind", async (ctx) => {
     {time: "12:30", what: "middag"},
     {time: "20:30", what: "avond"},
   ].map((info) => {
-    schedulesRepos
+    return schedulesRepos
       .add({
         question: {
           question: `Heb je je ${info.what}-pillen geslikt?`,
@@ -50,6 +50,7 @@ composer.command("debug", async (ctx) => {
 composer.command("sleep", async (ctx) => {
   const schedulesRepos = db.schedules;
 
+  return Promise.all([
   schedulesRepos
     .add({
       question: {
@@ -62,9 +63,9 @@ composer.command("sleep", async (ctx) => {
         "time": "07:00",
       },
       scheduled: Timestamp.fromDate(new Date()),
-    });
+    }),
 
-  ctx.reply("Reminder gezet om 7:00");
+  ctx.reply("Reminder gezet om 7:00")]);
 } );
 
 export default composer;

@@ -2,8 +2,9 @@ import {DocumentData, QueryDocumentSnapshot,
   Timestamp} from "firebase-admin/firestore";
 import {getPlanner} from "./planAhead";
 import db from "../utils/db";
+import { schedule } from "../types/schedule";
 
-const planSchedule = (doc: QueryDocumentSnapshot<DocumentData>) => {
+const planSchedule = (doc: QueryDocumentSnapshot<schedule, DocumentData>) => {
   const data = doc.data();
 
   const planner = getPlanner(data.type);

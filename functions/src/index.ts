@@ -8,7 +8,7 @@ const bot = new Telegraf(TELEGRAM_API_TOKEN.value());
 
 import {onRequest} from "firebase-functions/v2/https";
 import webhookCallback from "./telegram/webhookCallback";
-exports.telegram = onRequest(
+export const telegram = onRequest(
   {
     region: "europe-west3",
   },
@@ -17,7 +17,7 @@ exports.telegram = onRequest(
 
 import {onSchedule} from "firebase-functions/v2/scheduler";
 import scheduleTick from "./cron/scheduleTick";
-exports.cron = onSchedule(
+export const cron = onSchedule(
   {
     region: "europe-west3",
     schedule: "every 15 minutes",

@@ -9,17 +9,22 @@ composer.command("clear", async (ctx) => {
     .where("chat", "==", ctx.chat?.id)
     .get();
 
-  mySchedules.forEach((doc) =>
-    doc.ref.delete()
+  const delSchedules = Promise.all(
+    mySchedules.docs.map(
+      doc => doc.ref.delete()
+    )
   );
 
   const myQuestions = await db.questions
     .where("chat", "==", ctx.chat?.id)
     .get();
 
-  myQuestions.forEach((doc) =>
-    doc.ref.delete()
-  );
+    const delQuestions = Promise.all(
+      myQuestions.docs.map(
+        doc =>    doc.ref.delete()
+    ));
+
+    return Promise.all([delSchedules,delQuestions]);
 });
 
 composer.command("list", async (ctx) => {
@@ -27,10 +32,14 @@ composer.command("list", async (ctx) => {
     .where("chat", "==", ctx.chat?.id)
     .get();
 
-  mySchedules.forEach((doc) => {
-    ctx.reply(`Schema ${doc.data().type}, vraag: ` +
-      doc.data().question.question);
-  });
+  return Promise.all(
+    mySchedules.docs.map(doc => {
+    return ctx.reply(
+      `Schema ${doc.data().type}, vraag: ` +
+      doc.data().question.question
+    );
+  })
+);
 } );
 
 
