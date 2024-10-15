@@ -17,20 +17,20 @@ export async function askedPlannedQuestions(bot: Telegraf) {
     return;
   }
 
-  questions.forEach((doc) => {
+  return Promise.all(questions.docs.map(async (doc) => {
     const savedData = doc.data();
 
     const buttons = [savedData.question.answers
       .map( (answer:string, key:number) =>
         Markup.button.callback(
           answer,
-          "doc" + doc.id + "-answer" + key
+          `doc${doc.id}-answer${key}`
         )
       ),
     [
       Markup.button.callback(
         "💤 Snooze",
-        "doc" + doc.id + "-snooze"
+        `doc${doc.id}-snooze`
       )],
     ];
 
@@ -47,5 +47,5 @@ export async function askedPlannedQuestions(bot: Telegraf) {
     });
 
     return Promise.all([sendMessage, saveState]);
-  });
+  }))
 }
