@@ -1,18 +1,17 @@
 import { DocumentData, QueryDocumentSnapshot,
   Timestamp } from 'firebase-admin/firestore'
-import { getPlanner } from './planAhead'
+import { plan } from './planAhead'
 import db from '../utils/db'
 import { schedule } from '../types/schedule'
 
 const planSchedule = (doc: QueryDocumentSnapshot<schedule, DocumentData>) => {
   const data = doc.data()
 
-  const planner = getPlanner(data.type)
   const {
     parameters: parameters,
     timestamps: timestamps,
     nextPlanMoment: nextPlanMoment,
-  } = planner(data.parameters)
+  } = plan(data)
 
   const addQuestions = Promise.all(
     timestamps.map(async timing =>

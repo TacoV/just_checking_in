@@ -1,7 +1,6 @@
 import { Timestamp } from 'firebase-admin/firestore'
 import { DateTime } from 'luxon'
-import { dailyScheduleParams, oftenScheduleParams,
-  weeklyScheduleParams } from '../types/schedule'
+import { dailyScheduleParams, oftenScheduleParams, params, schedule, weeklyScheduleParams } from '../types/schedule'
 
 /*
  * Fill next hour with a message every x minutes
@@ -22,8 +21,10 @@ function planOften(parameters: oftenScheduleParams) {
     planFor = planFor.plus({ minutes: interval })
   }
 
+  parameters.firstrun = false
+
   return {
-    parameters: { ...parameters, firstrun: false },
+    parameters: parameters,
     timestamps: timestamps,
     nextPlanMoment: Timestamp.fromDate(
       planEnd.minus({ minutes: 10 }).toJSDate(),
@@ -82,11 +83,10 @@ function planWeekly(parameters: weeklyScheduleParams) {
   }
 }
 
-export function getPlanner(type: string) {
-  switch (type) {
-    case 'often': return planOften
-    case 'daily': return planDaily
-    case 'weekly': return planWeekly
+export function plan(schedule: schedule): { parameters: params, timestamps: Timestamp[], nextPlanMoment: Timestamp } {
+  switch (schedule.type) {
+    case 'often': return planOften(schedule.parameters as oftenScheduleParams)
+    case 'daily': return planDaily(schedule.parameters as dailyScheduleParams)
+    case 'weekly': return planWeekly(schedule.parameters as weeklyScheduleParams)
   }
-  throw new Error('Unknown type')
 }

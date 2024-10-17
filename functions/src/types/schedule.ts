@@ -13,10 +13,13 @@ export interface weeklyScheduleParams {
   day: WeekdayNumbers
   time: string
 }
+
+export type params = oftenScheduleParams | dailyScheduleParams | weeklyScheduleParams
+
 export interface schedule {
   question: abstractQuestion
   chat: number
   type: 'often' | 'daily' | 'weekly'
-  parameters: oftenScheduleParams | dailyScheduleParams | weeklyScheduleParams
+  parameters: params
   scheduled: Timestamp
 }
