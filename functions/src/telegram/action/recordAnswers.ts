@@ -1,5 +1,5 @@
 import { Composer } from 'telegraf'
-import db from '../utils/db'
+import db from '../../utils/db'
 import { Timestamp } from 'firebase-admin/firestore'
 import { DateTime } from 'luxon'
 

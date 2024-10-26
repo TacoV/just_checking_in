@@ -1,6 +1,6 @@
 import { Timestamp } from 'firebase-admin/firestore'
 import { Composer } from 'telegraf'
-import db from '../utils/db'
+import db from '../../utils/db'
 
 const composer = new Composer()
 

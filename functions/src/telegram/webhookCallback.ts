@@ -1,13 +1,14 @@
 import { Telegraf } from 'telegraf'
 
-import scheduleCommands from './scheduleCommands'
-import adminCommands from './adminCommands'
-import recordAnswers from './recordAnswers'
+import scheduleCommands from './command/scheduleCommands'
+import adminCommands from './command/adminCommands'
+import recordAnswers from './action/recordAnswers'
+import start from './command/start'
+import create from './action/create'
+import deletekeyboard from './action/deletekeyboard'
 
 export default (bot: Telegraf) => {
-  bot.start((ctx) => {
-    return ctx.reply('Yeah daar gaan we')
-  })
+  bot.use(start)
   bot.help((ctx) => {
     return ctx.reply('Ik weet het ook niet, kom ik op terug')
   })
@@ -15,10 +16,11 @@ export default (bot: Telegraf) => {
   bot.use(scheduleCommands)
   bot.use(adminCommands)
   bot.use(recordAnswers)
+  bot.use(create)
+  bot.use(deletekeyboard)
 
   // Todo: edit schedules
   // Todo: see results of questions
-  // Todo: set old unanswered questions to status dropped
 
   return bot.webhookCallback()
 }
